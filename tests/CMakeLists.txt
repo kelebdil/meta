@@ -11,7 +11,16 @@ set(BUILD_GTEST ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 include_directories(${gtest_SOURCE_DIR}/include)
 
-add_executable(list_tests list_tests.cpp demangle.cpp demangle.hpp helper.cpp helper.hpp)
+add_executable(list_tests
+    demangle.cpp
+    demangle.hpp
+    helper.cpp
+    helper.hpp
+    list_tests.cpp
+    operations_tests.cpp
+    test_lists.hpp
+    test_operations.hpp
+)
 
 target_link_libraries(list_tests PUBLIC
     gtest

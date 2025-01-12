@@ -2,16 +2,12 @@
 
 #include "helper.hpp"
 #include "meta/meta.hpp"
+#include "test_lists.hpp"
+#include "test_operations.hpp"
 
 #include <type_traits>
 
 TEST(GTest, Smoke) {}
-
-using L0 = meta::data::list<>;
-using L1 = meta::data::list<bool>;
-using L2 = meta::data::list<float, double>;
-using L3 = meta::data::list<int, char, void>;
-using L4 = meta::data::list<bool, char, int, long>;
 
 TEST(List, Empty) {
   ASSERT_TRUE(meta::op::is_empty_v<L0>);
@@ -93,33 +89,6 @@ TEST(List, DoubleReverse) {
   EXPECT_SAME(meta::op::reverse_t<meta::op::reverse_t<L3>>, L3);
   EXPECT_SAME(meta::op::reverse_t<meta::op::reverse_t<L4>>, L4);
 }
-
-TEST(Apply, Test) {
-  EXPECT_SAME(CC(meta::op::apply_t<std::type_identity, int>), int);
-  EXPECT_SAME(CC(meta::op::apply_t<std::add_const, int>), const int);
-}
-
-namespace test {
-
-template <typename T>
-using add_ptr_to_const =
-    meta::op::compose<std::add_pointer, std::add_const>::op<T>;
-
-template <typename T>
-using make_const_ptr =
-    meta::op::compose<std::add_const, std::add_pointer>::op<T>;
-
-template <typename T>
-using make_double_ptr_to_const =
-    meta::op::compose<std::add_pointer, std::add_pointer,
-                      std::add_const>::op<T>;
-
-template <typename T>
-using make_ref_to_ptr_to_const =
-    meta::op::compose<std::add_lvalue_reference, std::add_pointer,
-                      std::add_const>::op<T>;
-
-} // namespace test
 
 TEST(Meta, ListForeach) {
   EXPECT_SAME(CC(meta::op::foreach_t<std::type_identity, L0>), L0);
