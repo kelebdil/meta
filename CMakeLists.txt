@@ -13,4 +13,3 @@ add_custom_target(meta_tests)
 
 add_subdirectory(include/meta)
 add_subdirectory(tests)
-

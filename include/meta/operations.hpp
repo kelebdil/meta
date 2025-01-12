@@ -3,9 +3,7 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace meta {
-
-namespace op {
+namespace meta::op {
 
 template <typename T> struct is_empty;
 
@@ -65,5 +63,4 @@ public:
   };
 };
 
-} // namespace op
-} // namespace meta
+} // namespace meta::op
