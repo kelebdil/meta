@@ -44,6 +44,17 @@ template <typename... Args>
 struct size<data::list<Args...>>
     : std::integral_constant<std::size_t, sizeof...(Args)> {};
 
+template <typename... Args> struct at<data::list<Args...>, 0> {
+  static_assert(size_v<data::list<Args...>> > 0);
+  using type = front_t<data::list<Args...>>;
+};
+
+template <typename... Args, std::size_t index>
+struct at<data::list<Args...>, index> {
+  static_assert(size_v<data::list<Args...>> > index);
+  using type = at_t<typename data::list<Args...>::tail, index - 1>;
+};
+
 template <typename... Args1, typename... Args2>
 struct concat<data::list<Args1...>, data::list<Args2...>> {
   using type = data::list<Args1..., Args2...>;

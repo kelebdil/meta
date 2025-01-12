@@ -21,6 +21,11 @@ template <typename T> struct size;
 
 template <typename T> constexpr std::size_t size_v = size<T>::value;
 
+template <typename C, std::size_t index> struct at;
+
+template <typename C, std::size_t index>
+using at_t = typename at<C, index>::type;
+
 template <typename T1, typename T2> struct concat;
 
 template <typename T1, typename T2>

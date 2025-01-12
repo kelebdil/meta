@@ -43,6 +43,22 @@ TEST(List, Size) {
   ASSERT_EQ(4, meta::op::size_v<L4>);
 }
 
+TEST(List, At) {
+  EXPECT_SAME(bool, CC(meta::op::at_t<L1, 0>));
+  EXPECT_SAME(float, CC(meta::op::at_t<L2, 0>));
+  EXPECT_SAME(int, CC(meta::op::at_t<L3, 0>));
+  EXPECT_SAME(bool, CC(meta::op::at_t<L4, 0>));
+
+  EXPECT_SAME(double, CC(meta::op::at_t<L2, 1>));
+  EXPECT_SAME(char, CC(meta::op::at_t<L3, 1>));
+  EXPECT_SAME(char, CC(meta::op::at_t<L4, 1>));
+
+  EXPECT_SAME(void, CC(meta::op::at_t<L3, 2>));
+  EXPECT_SAME(int, CC(meta::op::at_t<L4, 2>));
+
+  EXPECT_SAME(long, CC(meta::op::at_t<L4, 3>));
+}
+
 TEST(List, Concat) {
   EXPECT_SAME(CC(meta::op::concat_t<L0, L0>), L0);
   EXPECT_SAME(CC(meta::op::concat_t<L0, L1>), L1);
