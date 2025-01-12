@@ -7,3 +7,4 @@ using L1 = meta::data::list<bool>;
 using L2 = meta::data::list<float, double>;
 using L3 = meta::data::list<int, char, void>;
 using L4 = meta::data::list<bool, char, int, long>;
+using L5 = meta::data::list<L0, L1, L2, L3, L4>;
