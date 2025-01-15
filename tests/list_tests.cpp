@@ -51,7 +51,7 @@ TEST(List, At) {
   EXPECT_SAME(L0, CC(meta::op::at_t<L5, 0>));
 
   EXPECT_SAME(double, CC(meta::op::at_t<L2, 1>));
-  EXPECT_SAME(char, CC(meta::op::at_t<L3, 1>));
+  EXPECT_SAME(CC(std::tuple<char, short>), CC(meta::op::at_t<L3, 1>));
   EXPECT_SAME(char, CC(meta::op::at_t<L4, 1>));
   EXPECT_SAME(L1, CC(meta::op::at_t<L5, 1>));
 
@@ -81,10 +81,12 @@ TEST(List, Concat) {
               CC(meta::data::list<bool, float, double>));
   EXPECT_SAME(CC(meta::op::concat_t<L2, L1>),
               CC(meta::data::list<float, double, bool>));
-  EXPECT_SAME(CC(meta::op::concat_t<L2, L3>),
-              CC(meta::data::list<float, double, int, char, void>));
-  EXPECT_SAME(CC(meta::op::concat_t<L3, L2>),
-              CC(meta::data::list<int, char, void, float, double>));
+  EXPECT_SAME(
+      CC(meta::op::concat_t<L2, L3>),
+      CC(meta::data::list<float, double, int, std::tuple<char, short>, void>));
+  EXPECT_SAME(
+      CC(meta::op::concat_t<L3, L2>),
+      CC(meta::data::list<int, std::tuple<char, short>, void, float, double>));
   EXPECT_SAME(CC(meta::op::concat_t<L5, L2>),
               CC(meta::data::list<L0, L1, L2, L3, L4, float, double>));
   EXPECT_SAME(CC(meta::op::concat_t<L2, L5>),
@@ -95,7 +97,8 @@ TEST(List, Reverse) {
   EXPECT_SAME(meta::op::reverse_t<L0>, L0);
   EXPECT_SAME(meta::op::reverse_t<L1>, L1);
   EXPECT_SAME(meta::op::reverse_t<L2>, CC(meta::data::list<double, float>));
-  EXPECT_SAME(meta::op::reverse_t<L3>, CC(meta::data::list<void, char, int>));
+  EXPECT_SAME(meta::op::reverse_t<L3>,
+              CC(meta::data::list<void, std::tuple<char, short>, int>));
   EXPECT_SAME(meta::op::reverse_t<L4>,
               CC(meta::data::list<long, int, char, bool>));
   EXPECT_SAME(meta::op::reverse_t<L5>,
@@ -111,7 +114,7 @@ TEST(List, DoubleReverse) {
   EXPECT_SAME(meta::op::reverse_t<meta::op::reverse_t<L5>>, L5);
 }
 
-TEST(Meta, ListForeach) {
+TEST(List, Foreach) {
   EXPECT_SAME(CC(meta::op::foreach_t<std::type_identity, L0>), L0);
   EXPECT_SAME(CC(meta::op::foreach_t<std::type_identity, L1>), L1);
   EXPECT_SAME(CC(meta::op::foreach_t<std::type_identity, L2>), L2);
@@ -125,7 +128,8 @@ TEST(Meta, ListForeach) {
   EXPECT_SAME(CC(meta::op::foreach_t<std::add_const, L2>),
               CC(meta::data::list<const float, const double>));
   EXPECT_SAME(CC(meta::op::foreach_t<std::add_const, L3>),
-              CC(meta::data::list<const int, const char, const void>));
+              CC(meta::data::list<const int, const std::tuple<char, short>,
+                                  const void>));
   EXPECT_SAME(
       CC(meta::op::foreach_t<std::add_const, L4>),
       CC(meta::data::list<const bool, const char, const int, const long>));
@@ -140,7 +144,7 @@ TEST(Meta, ListForeach) {
   EXPECT_SAME(CC(meta::op::foreach_t<std::add_pointer, L2>),
               CC(meta::data::list<float *, double *>));
   EXPECT_SAME(CC(meta::op::foreach_t<std::add_pointer, L3>),
-              CC(meta::data::list<int *, char *, void *>));
+              CC(meta::data::list<int *, std::tuple<char, short> *, void *>));
   EXPECT_SAME(CC(meta::op::foreach_t<std::add_pointer, L4>),
               CC(meta::data::list<bool *, char *, int *, long *>));
   EXPECT_SAME(CC(meta::op::foreach_t<std::add_pointer, L5>),
@@ -152,7 +156,8 @@ TEST(Meta, ListForeach) {
   EXPECT_SAME(CC(meta::op::foreach_t<test::add_ptr_to_const, L2>),
               CC(meta::data::list<float const *, double const *>));
   EXPECT_SAME(CC(meta::op::foreach_t<test::add_ptr_to_const, L3>),
-              CC(meta::data::list<int const *, char const *, void const *>));
+              CC(meta::data::list<int const *, std::tuple<char, short> const *,
+                                  void const *>));
   EXPECT_SAME(CC(meta::op::foreach_t<test::add_ptr_to_const, L4>),
               CC(meta::data::list<bool const *, char const *, int const *,
                                   long const *>));
@@ -166,7 +171,8 @@ TEST(Meta, ListForeach) {
   EXPECT_SAME(CC(meta::op::foreach_t<test::make_const_ptr, L2>),
               CC(meta::data::list<float *const, double *const>));
   EXPECT_SAME(CC(meta::op::foreach_t<test::make_const_ptr, L3>),
-              CC(meta::data::list<int *const, char *const, void *const>));
+              CC(meta::data::list<int *const, std::tuple<char, short> *const,
+                                  void *const>));
   EXPECT_SAME(
       CC(meta::op::foreach_t<test::make_const_ptr, L4>),
       CC(meta::data::list<bool *const, char *const, int *const, long *const>));
@@ -179,8 +185,10 @@ TEST(Meta, ListForeach) {
               meta::data::list<bool const **>);
   EXPECT_SAME(CC(meta::op::foreach_t<test::make_double_ptr_to_const, L2>),
               CC(meta::data::list<float const **, double const **>));
-  EXPECT_SAME(CC(meta::op::foreach_t<test::make_double_ptr_to_const, L3>),
-              CC(meta::data::list<int const **, char const **, void const **>));
+  EXPECT_SAME(
+      CC(meta::op::foreach_t<test::make_double_ptr_to_const, L3>),
+      CC(meta::data::list<int const **, std::tuple<char, short> const **,
+                          void const **>));
   EXPECT_SAME(CC(meta::op::foreach_t<test::make_double_ptr_to_const, L4>),
               CC(meta::data::list<bool const **, char const **, int const **,
                                   long const **>));
@@ -193,12 +201,97 @@ TEST(Meta, ListForeach) {
               meta::data::list<bool const *&>);
   EXPECT_SAME(CC(meta::op::foreach_t<test::make_ref_to_ptr_to_const, L2>),
               CC(meta::data::list<float const *&, double const *&>));
-  EXPECT_SAME(CC(meta::op::foreach_t<test::make_ref_to_ptr_to_const, L3>),
-              CC(meta::data::list<int const *&, char const *&, void const *&>));
+  EXPECT_SAME(
+      CC(meta::op::foreach_t<test::make_ref_to_ptr_to_const, L3>),
+      CC(meta::data::list<int const *&, std::tuple<char, short> const *&,
+                          void const *&>));
   EXPECT_SAME(CC(meta::op::foreach_t<test::make_ref_to_ptr_to_const, L4>),
               CC(meta::data::list<bool const *&, char const *&, int const *&,
                                   long const *&>));
   EXPECT_SAME(CC(meta::op::foreach_t<test::make_ref_to_ptr_to_const, L5>),
               CC(meta::data::list<L0 const *&, L1 const *&, L2 const *&,
                                   L3 const *&, L4 const *&>));
+}
+
+using T0 = std::tuple<>;
+using T1 = std::tuple<bool>;
+using T2 = std::tuple<float, double>;
+using T3 = std::tuple<int, std::tuple<char, short>, void>;
+using T4 = std::tuple<bool, char, int, long>;
+using T5 = std::tuple<L0, L1, L2, L3, L4>;
+
+TEST(List, ListFromTuple) {
+  EXPECT_SAME(meta::op::list_from_tuple_t<T0>, L0);
+  EXPECT_SAME(meta::op::list_from_tuple_t<T1>, L1);
+  EXPECT_SAME(meta::op::list_from_tuple_t<T2>, L2);
+  EXPECT_SAME(meta::op::list_from_tuple_t<T3>, L3);
+  EXPECT_SAME(meta::op::list_from_tuple_t<T4>, L4);
+  EXPECT_SAME(meta::op::list_from_tuple_t<T5>, L5);
+}
+
+TEST(List, TupleFromList) {
+  EXPECT_SAME(meta::op::tuple_from_list_t<L0>, T0);
+  EXPECT_SAME(meta::op::tuple_from_list_t<L1>, T1);
+  EXPECT_SAME(meta::op::tuple_from_list_t<L2>, T2);
+  EXPECT_SAME(meta::op::tuple_from_list_t<L4>, T4);
+  EXPECT_SAME(meta::op::tuple_from_list_t<L5>, T5);
+}
+
+TEST(List, Flatten) {
+  EXPECT_SAME(meta::op::flatten_t<L0>, L0);
+  EXPECT_SAME(meta::op::flatten_t<L1>, L1);
+  EXPECT_SAME(meta::op::flatten_t<L2>, L2);
+  EXPECT_SAME(meta::op::flatten_t<L3>, L3);
+  EXPECT_SAME(meta::op::flatten_t<L4>, L4);
+  EXPECT_SAME(
+      meta::op::flatten_t<L5>,
+      CC(meta::data::list<bool, float, double, int, std::tuple<char, short>,
+                          void, bool, char, int, long>));
+
+  EXPECT_SAME(meta::op::flatten_t<meta::data::list<L0>>, L0);
+  EXPECT_SAME(meta::op::flatten_t<meta::data::list<L1>>, L1);
+  EXPECT_SAME(meta::op::flatten_t<meta::data::list<L2>>, L2);
+  EXPECT_SAME(meta::op::flatten_t<meta::data::list<L3>>, L3);
+  EXPECT_SAME(meta::op::flatten_t<meta::data::list<L4>>, L4);
+  EXPECT_SAME(meta::op::flatten_t<meta::data::list<L5>>, L5);
+
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<int, L0, float>>),
+              CC(meta::data::list<int, float>));
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<int, L1, float>>),
+              CC(meta::data::list<int, bool, float>));
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<int, L2, float>>),
+              CC(meta::data::list<int, float, double, float>));
+  EXPECT_SAME(
+      CC(meta::op::flatten_t<meta::data::list<int, L3, float>>),
+      CC(meta::data::list<int, int, std::tuple<char, short>, void, float>));
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<int, L4, float>>),
+              CC(meta::data::list<int, bool, char, int, long, float>));
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<int, L5, float>>),
+              CC(meta::data::list<int, L0, L1, L2, L3, L4, float>));
+
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<L0, float>>),
+              CC(meta::data::list<float>));
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<L1, float>>),
+              CC(meta::data::list<bool, float>));
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<L2, float>>),
+              CC(meta::data::list<float, double, float>));
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<L3, float>>),
+              CC(meta::data::list<int, std::tuple<char, short>, void, float>));
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<L4, float>>),
+              CC(meta::data::list<bool, char, int, long, float>));
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<L5, float>>),
+              CC(meta::data::list<L0, L1, L2, L3, L4, float>));
+
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<int, L0>>),
+              CC(meta::data::list<int>));
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<int, L1>>),
+              CC(meta::data::list<int, bool>));
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<int, L2>>),
+              CC(meta::data::list<int, float, double>));
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<int, L3>>),
+              CC(meta::data::list<int, int, std::tuple<char, short>, void>));
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<int, L4>>),
+              CC(meta::data::list<int, bool, char, int, long>));
+  EXPECT_SAME(CC(meta::op::flatten_t<meta::data::list<int, L5>>),
+              CC(meta::data::list<int, L0, L1, L2, L3, L4>));
 }

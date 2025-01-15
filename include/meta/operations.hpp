@@ -3,6 +3,8 @@
 #include <cstddef>
 #include <type_traits>
 
+#include "meta/traits.hpp"
+
 namespace meta::op {
 
 template <typename T> struct is_empty;
@@ -67,5 +69,47 @@ public:
     using type = typename compose<F, last>::template op<Args...>::type;
   };
 };
+
+namespace detail {
+
+template <typename ContainerTag, typename Container> struct flatten_impl;
+
+}
+
+namespace detail {
+template <typename template_tag, typename C> struct flatten_op_impl;
+
+template <typename template_tag, template <typename...> typename C>
+struct flatten_op_impl<template_tag, C<>> {
+  using type = C<>;
+};
+
+template <typename template_tag, template <typename...> typename C,
+          typename... Args>
+struct flatten_op_impl<template_tag, C<C<Args...>>> {
+  using type = C<Args...>;
+};
+
+template <typename template_tag, template <typename...> typename C,
+          typename... Args1, typename... Args2>
+struct flatten_op_impl<template_tag, C<C<Args1...>, Args2...>> {
+  using type =
+      concat_t<C<Args1...>,
+               typename flatten_op_impl<template_tag, C<Args2...>>::type>;
+};
+
+template <typename template_tag, template <typename...> typename C, typename T,
+          typename... Args>
+struct flatten_op_impl<template_tag, C<T, Args...>> {
+  using type =
+      concat_t<C<T>, typename flatten_op_impl<template_tag, C<Args...>>::type>;
+};
+
+} // namespace detail
+
+template <typename C>
+using flatten = detail::flatten_op_impl<template_tag_t<C>, C>;
+
+template <typename C> using flatten_t = typename flatten<C>::type;
 
 } // namespace meta::op
