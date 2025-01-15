@@ -213,30 +213,6 @@ TEST(List, Foreach) {
                                   L3 const *&, L4 const *&>));
 }
 
-using T0 = std::tuple<>;
-using T1 = std::tuple<bool>;
-using T2 = std::tuple<float, double>;
-using T3 = std::tuple<int, std::tuple<char, short>, void>;
-using T4 = std::tuple<bool, char, int, long>;
-using T5 = std::tuple<L0, L1, L2, L3, L4>;
-
-TEST(List, ListFromTuple) {
-  EXPECT_SAME(meta::op::list_from_tuple_t<T0>, L0);
-  EXPECT_SAME(meta::op::list_from_tuple_t<T1>, L1);
-  EXPECT_SAME(meta::op::list_from_tuple_t<T2>, L2);
-  EXPECT_SAME(meta::op::list_from_tuple_t<T3>, L3);
-  EXPECT_SAME(meta::op::list_from_tuple_t<T4>, L4);
-  EXPECT_SAME(meta::op::list_from_tuple_t<T5>, L5);
-}
-
-TEST(List, TupleFromList) {
-  EXPECT_SAME(meta::op::tuple_from_list_t<L0>, T0);
-  EXPECT_SAME(meta::op::tuple_from_list_t<L1>, T1);
-  EXPECT_SAME(meta::op::tuple_from_list_t<L2>, T2);
-  EXPECT_SAME(meta::op::tuple_from_list_t<L4>, T4);
-  EXPECT_SAME(meta::op::tuple_from_list_t<L5>, T5);
-}
-
 TEST(List, Flatten) {
   EXPECT_SAME(meta::op::flatten_t<L0>, L0);
   EXPECT_SAME(meta::op::flatten_t<L1>, L1);

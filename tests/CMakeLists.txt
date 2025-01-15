@@ -20,6 +20,7 @@ add_executable(list_tests
     operations_tests.cpp
     test_lists.hpp
     test_operations.hpp
+    tuple_tests.cpp
 )
 
 target_link_libraries(list_tests PUBLIC

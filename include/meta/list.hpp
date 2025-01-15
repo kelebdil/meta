@@ -4,8 +4,6 @@
 
 #include <cstddef>
 
-#include <tuple>
-
 #include <type_traits>
 
 namespace meta {
@@ -82,24 +80,6 @@ struct foreach<F, data::list<Args...>> {
   using type =
       concat_t<meta::data::list<apply_t<F, front_t<data::list<Args...>>>>,
                foreach_t<F, typename data::list<Args...>::tail>>;
-};
-
-template <typename... Args> struct tuple_from_list;
-
-template <typename... Args>
-using tuple_from_list_t = typename tuple_from_list<Args...>::type;
-
-template <typename... Args> struct tuple_from_list<data::list<Args...>> {
-  using type = std::tuple<Args...>;
-};
-
-template <typename... Args> struct list_from_tuple;
-
-template <typename... Args>
-using list_from_tuple_t = typename list_from_tuple<Args...>::type;
-
-template <typename... Args> struct list_from_tuple<std::tuple<Args...>> {
-  using type = data::list<Args...>;
 };
 
 } // namespace op
