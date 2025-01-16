@@ -138,4 +138,40 @@ struct accumulate<Init, Acc, C<T, Args...>> {
   using type = accumulate_t<accumulate_t<Init, Acc, C<T>>, Acc, C<Args...>>;
 };
 
+template <std::size_t N, typename Init,
+          template <typename X, typename Y> typename Acc, typename C>
+struct accumulate_n;
+
+template <std::size_t N, typename Init,
+          template <typename X, typename Y> typename Acc, typename C>
+using accumulate_n_t = typename accumulate_n<N, Init, Acc, C>::type;
+
+template <typename Init, template <typename X, typename Y> typename Acc,
+          template <typename...> typename C, typename T, typename... Args>
+struct accumulate_n<0, Init, Acc, C<T, Args...>> {
+  using type = Init;
+};
+
+template <typename Init, template <typename X, typename Y> typename Acc,
+          template <typename...> typename C>
+struct accumulate_n<0, Init, Acc, C<>> {
+  using type = Init;
+};
+
+template <typename Init, template <typename X, typename Y> typename Acc,
+          template <typename...> typename C, typename T, typename... Args>
+struct accumulate_n<1, Init, Acc, C<T, Args...>> {
+  using type = typename Acc<Init, T>::type;
+};
+
+template <std::size_t N, typename Init,
+          template <typename X, typename Y> typename Acc,
+          template <typename...> typename C, typename T, typename... Args>
+struct accumulate_n<N, Init, Acc, C<T, Args...>> {
+  static_assert(N > 0);
+  static_assert(N <= sizeof...(Args) + 1);
+  using type = accumulate_n_t<N - 1, accumulate_n_t<1, Init, Acc, C<T>>, Acc,
+                              C<Args...>>;
+};
+
 } // namespace meta::op
