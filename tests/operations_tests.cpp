@@ -28,3 +28,13 @@ TEST(Operations, Compose) {
   EXPECT_SAME(CC(meta::op::apply_t<test::make_ref_to_ptr_to_const, L4>),
               L4 const *&);
 }
+
+TEST(Operations, Accumulate) {
+  EXPECT_SAME(
+      CC(meta::op::accumulate_t<L0, meta::op::concat, L5>),
+      CC(meta::data::list<bool, float, double, int, std::tuple<char, short>,
+                          void, bool, char, int, long>));
+  EXPECT_SAME(CC(meta::op::accumulate_t<L0, meta::op::concat, L5>),
+              meta::op::flatten_t<L5>);
+}
+

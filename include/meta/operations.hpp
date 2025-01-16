@@ -112,4 +112,30 @@ using flatten = detail::flatten_op_impl<template_tag_t<C>, C>;
 
 template <typename C> using flatten_t = typename flatten<C>::type;
 
+template <typename Init, template <typename X, typename Y> typename Acc,
+          typename C>
+struct accumulate;
+
+template <typename Init, template <typename X, typename Y> typename Acc,
+          typename C>
+using accumulate_t = typename accumulate<Init, Acc, C>::type;
+
+template <typename Init, template <typename X, typename Y> typename Acc,
+          template <typename...> typename C>
+struct accumulate<Init, Acc, C<>> {
+  using type = Init;
+};
+
+template <typename Init, template <typename X, typename Y> typename Acc,
+          template <typename...> typename C, typename T>
+struct accumulate<Init, Acc, C<T>> {
+  using type = typename Acc<Init, T>::type;
+};
+
+template <typename Init, template <typename X, typename Y> typename Acc,
+          template <typename...> typename C, typename T, typename... Args>
+struct accumulate<Init, Acc, C<T, Args...>> {
+  using type = accumulate_t<accumulate_t<Init, Acc, C<T>>, Acc, C<Args...>>;
+};
+
 } // namespace meta::op
