@@ -175,3 +175,18 @@ TEST(Tuple, Flatten) {
               CC(std::tuple<int, T0, T1, T2, T3, T4>));
   EXPECT_SAME(meta::op::flatten_t<TupleOfLists>, TupleOfLists);
 }
+
+TEST(Tuple, ConcatTuples) {
+  std::tuple<int, char> t1{1, 'a'};
+  std::tuple<float, double, void *> t2{3.0f, 3.14, nullptr};
+  std::tuple<long, short> t3{long{1}, short{2}};
+  std::tuple<int, char, float, double, void *, long, short> ct =
+      std::make_tuple(1, 'a', 3.0f, 3.14, (void *)nullptr, long{1}, short{2});
+
+  ASSERT_SAME(decltype(meta::op::concat_tuples(t1, t2, t3)),
+              CC(std::tuple<int, char, float, double, void *, long, short>));
+  ASSERT_EQ(meta::op::concat_tuples(t1, t2, t3), ct);
+  ASSERT_EQ(meta::op::concat_tuples(t1, t2),
+            std::make_tuple(1, 'a', 3.0f, 3.14, nullptr));
+  ASSERT_EQ(std::tuple_cat(t1, t2, t3), ct);
+}
