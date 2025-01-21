@@ -30,3 +30,4 @@ target_link_libraries(list_tests PUBLIC
 
 include(AddMetaTest)
 add_meta_test(list_tests)
+add_test(list_tests list_tests)
